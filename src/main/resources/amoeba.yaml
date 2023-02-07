@@ -1,0 +1,21 @@
+amoeba:
+  jdbc:
+    persistence:
+      url: jdbc:h2:file:D:/DevelopmentWorkspace/Amoeba/db/amoeba
+      username: amoeba
+      password: amoeba
+    transient:
+      url: jdbc:h2:mem:amoeba
+      username: amoeba
+      password: amoeba
+  server:
+    port: 80
+    context-path: /
+  core-pool-size: 16
+  maximumPoolSize: 4096
+  keepAliveTimeMillis: 15
+  jar-path: D:\DevelopmentWorkspace\Amoeba_QQ\target
+  load-classes: cf.vbnm.amoeba.qq.ParentInitConfiguration
+go-cqhttp:
+  receive: ws://127.0.0.1:6700
+  send: http://127.0.0.1:5700
