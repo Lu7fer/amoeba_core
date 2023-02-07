@@ -44,3 +44,4 @@ bin/
 .idea/inspectionProfiles/
 .idea/httpRequests/
 /.idea/dataSources.local.xml
+/.idea/workspace.xml
