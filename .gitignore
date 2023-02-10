@@ -45,4 +45,4 @@ bin/
 .idea/httpRequests/
 /.idea/dataSources.local.xml
 /.idea/workspace.xml
-/db/
+db/
