@@ -25,7 +25,7 @@ class WebMvcConfigurerImpl : WebMvcConfigurer, WebApplicationInitializer {
 
     override fun configureContentNegotiation(configurer: ContentNegotiationConfigurer) {
         configurer.defaultContentTypeStrategy(HeaderContentNegotiationStrategy())
-        configurer.defaultContentType(MediaType.TEXT_PLAIN)
+        configurer.defaultContentType(MediaType.APPLICATION_JSON)
     }
 
     override fun onStartup(servletContext: ServletContext) {

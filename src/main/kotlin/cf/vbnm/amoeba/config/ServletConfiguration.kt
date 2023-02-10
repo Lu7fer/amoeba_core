@@ -37,16 +37,7 @@ open class ServletConfiguration {
     ): MappingJackson2HttpMessageConverter {
         return MappingJackson2HttpMessageConverter(objectMapper).apply {
             val supportedMediaTypes: MutableList<MediaType> = ArrayList(this.supportedMediaTypes)
-            MediaType::class.java.fields.forEach {
-                if (it.type == MediaType::class.java) {
-                    if (!it.isAnnotationPresent(java.lang.Deprecated::class.java)) {
-                        val mediaType = it.get(null)
-                        if (mediaType is MediaType) {
-                            supportedMediaTypes.add(mediaType)
-                        }
-                    }
-                }
-            }
+            supportedMediaTypes.add(MediaType.APPLICATION_JSON)
             this.supportedMediaTypes = supportedMediaTypes
         }
     }
