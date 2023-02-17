@@ -1,10 +1,15 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.8.10'
+    id 'application'
+    id 'maven-publish'
 //    id "com.google.devtools.ksp" version "1.8.10-1.0.9"
 }
+//apply plugin: 'maven'
 
 group = 'cf.vbnm.amoeba'
 version = '1.0-SNAPSHOT'
+archivesBaseName = 'amoeba'
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -16,7 +21,7 @@ ext {
     kotlinCompilerJvmTarget = "1.8"
     springVersion = "6.0.0"
     springJpaVersion = "2.7.3"
-    jettyVersion = "11.0.12"
+    jettyVersion = "11.0.13"
     tomcatVersion = "10.1.2"
     jacksonVersion = "2.13.4.2"
     kotlinVersion = "1.8.10"
@@ -33,7 +38,7 @@ ext {
 dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "junit:junit:4.13.2"
-    testImplementation "org.springframework:spring-test:$springVersion"
+//    testImplementation "org.springframework:spring-test:$springVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:5.9.0"
     implementation "org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion"
     implementation "org.hibernate:hibernate-entitymanager:$hibernateEntitymanagerVersion"
@@ -44,6 +49,8 @@ dependencies {
             "org.springframework:spring-webmvc:$springVersion",
             "org.springframework:spring-aspects:$springVersion",
             "org.springframework:spring-context:$springVersion",
+            "org.springframework:spring-websocket:$springVersion",
+            "org.springframework:spring-messaging:$springVersion",
     )
     implementation "com.h2database:h2:$h2Version"
     implementation "org.yaml:snakeyaml:$snakeyamlVersion"
@@ -53,13 +60,40 @@ dependencies {
     implementation "javax.annotation:javax.annotation-api:1.3.2"
     implementation "org.slf4j:slf4j-api:$slf4jVersion"
     implementation(
-            "org.eclipse.jetty:jetty-webapp:$jettyVersion")
+            "org.eclipse.jetty:jetty-webapp:$jettyVersion",
+            "org.eclipse.jetty.websocket:websocket-jetty-server:$jettyVersion"
+    )
 
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId group
+            artifactId rootProject.name
+            version version
+            from components.java
+            suppressPomMetadataWarningsFor('runtimeElements')
+            repositories {
+                maven {
+                    url "/Users/28941/.m2/repository"
+//                    credentials {
+//                        username sonatypeUsername
+//                        password sonatypePassword
+//                    }
+                }
+            }
+        }
+    }
 }
 
 test {
     useJUnitPlatform()
+}
+build {
+    jar {
+
+    }
 }
 
 kotlin {

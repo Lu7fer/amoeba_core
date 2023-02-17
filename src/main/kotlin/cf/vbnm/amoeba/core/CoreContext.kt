@@ -1,8 +1,7 @@
 package cf.vbnm.amoeba.core
 
 import cf.vbnm.amoeba.config.CoreConfiguration
-import cf.vbnm.amoeba.core.spi.Starter
-import cf.vbnm.amoeba.core.starter.WebServerStarter
+import cf.vbnm.amoeba.core.starter.WebServerContextLoader
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.AbstractApplicationContext
 
@@ -24,11 +23,7 @@ class CoreContext {
         }
 
         init {
-            val starterMutableMap = propertyContext.getBeansOfType(Starter::class.java)
-            starterMutableMap.forEach { (_, u) ->
-                u.setProperty(propertyContext.getBean(CoreProperty::class.java))
-            }
-            applicationContext = propertyContext.getBean(WebServerStarter::class.java)
+            applicationContext = propertyContext.getBean(WebServerContextLoader::class.java)
                 .creatWebApplicationContext(propertyContext.getBean(CoreProperty::class.java))
         }
 

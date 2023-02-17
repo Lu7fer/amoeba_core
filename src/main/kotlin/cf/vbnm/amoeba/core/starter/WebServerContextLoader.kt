@@ -1,6 +1,12 @@
 package cf.vbnm.amoeba.core.starter
 
 import cf.vbnm.amoeba.config.ServletConfiguration
+import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_ADDRESS
+import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_CONTEXT_PATH
+import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_PORT
+import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_SERVLET_PATH
+import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_WS_SERVLET_PATH
+import cf.vbnm.amoeba.core.CoreContext
 import cf.vbnm.amoeba.core.CoreProperty
 import cf.vbnm.amoeba.core.log.Slf4kt
 import cf.vbnm.amoeba.core.log.Slf4kt.Companion.log
@@ -9,6 +15,9 @@ import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
+import org.eclipse.jetty.websocket.server.JettyWebSocketServlet
+import org.eclipse.jetty.websocket.server.JettyWebSocketServletFactory
+import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer
 import org.springframework.context.support.AbstractApplicationContext
 import org.springframework.stereotype.Component
 import org.springframework.web.SpringServletContainerInitializer
@@ -20,8 +29,8 @@ import java.net.InetSocketAddress
 
 @Component
 @Slf4kt
-class WebServerStarter(private val applicationContext: AbstractApplicationContext) {
-    private lateinit var server: Server
+class WebServerContextLoader(private val applicationContext: AbstractApplicationContext) {
+    private lateinit var jettyServer: Server
     private lateinit var webApplicationContext: AbstractApplicationContext
 
 
@@ -35,31 +44,36 @@ class WebServerStarter(private val applicationContext: AbstractApplicationContex
     fun creatWebApplicationContext(coreProperty: CoreProperty): AbstractApplicationContext {
         val webApplicationContext = AnnotationConfigWebApplicationContext()
         webApplicationContext.parent = applicationContext
-        server = Server(getInetSocketAddress(coreProperty))
-        server.handler = ServletContextHandler().apply {
+        jettyServer = Server(getInetSocketAddress(coreProperty))
+        jettyServer.handler = ServletContextHandler().apply {
             errorHandler = ErrorPageErrorHandler()
-            contextPath = coreProperty["server.contextPath"]
+            contextPath = coreProperty[SERVER_CONTEXT_PATH]
             addServletContainerInitializer(SpringServletContainerInitializer())
             this.addServlet(
                 ServletHolder(DispatcherServlet(webApplicationContext)),
-                coreProperty["server.servletPath"]
+                coreProperty[SERVER_SERVLET_PATH]
             )
             addEventListener(ContextLoaderListener(webApplicationContext))
 //            resourceBase = ClassPathResource("/").uri.toString()
             webApplicationContext.servletContext = servletHandler.servletContext
+
+            addServletContainerInitializer(JettyWebSocketServletContainerInitializer())
+            this.addServlet(ServletHolder("websocket", WebSocketServlet()), coreProperty[SERVER_WS_SERVLET_PATH])
+            JettyWebSocketServletContainerInitializer.configure(this, null)
         }
+
         webApplicationContext.register(ServletConfiguration::class.java)
         val providers = Starter.findServices()
         providers.forEach {
             webApplicationContext.register(it.javaClass)
             log.info("Registry starter: {}", it.javaClass.name)
             log.trace("Starting: {}", it)
-            it.setProperty(coreProperty)
-            log.info("Started: {}", it)
+            it.initProperty(coreProperty)
+            log.info("Started: {}", it.javaClass.name)
         }
 
-        server.stopAtShutdown
-        server.start()
+        jettyServer.stopAtShutdown = true
+        jettyServer.start()
         webApplicationContext.registerShutdownHook()
         webApplicationContext.refresh()
         log.info("Web server started...")
@@ -68,9 +82,18 @@ class WebServerStarter(private val applicationContext: AbstractApplicationContex
     }
 
     private fun getInetSocketAddress(coreProperty: CoreProperty): InetSocketAddress {
-        val address = coreProperty["server.address"]
-        val port = coreProperty["server.port"].toInt()
+        val address = coreProperty[SERVER_ADDRESS]
+        val port = coreProperty[SERVER_PORT].toInt()
         return InetSocketAddress.createUnresolved(address, port)
     }
 
+    companion object {
+        class WebSocketServlet : JettyWebSocketServlet() {
+            private val coreProperty = CoreContext.getCoreContext().getBean(CoreProperty::class.java)
+            override fun configure(factory: JettyWebSocketServletFactory) {
+                factory.getMapping(coreProperty[SERVER_WS_SERVLET_PATH])
+                factory.register(this.javaClass)
+            }
+        }
+    }
 }

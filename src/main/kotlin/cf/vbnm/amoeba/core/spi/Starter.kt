@@ -14,7 +14,7 @@ interface Starter<T> : FactoryBean<T> {
         }
     }
 
-    fun setProperty(coreProperty: CoreProperty)
+    fun initProperty(coreProperty: CoreProperty)
 
 
 }

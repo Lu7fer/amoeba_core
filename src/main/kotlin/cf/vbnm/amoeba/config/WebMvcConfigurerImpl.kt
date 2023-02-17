@@ -21,6 +21,7 @@ class WebMvcConfigurerImpl : WebMvcConfigurer, WebApplicationInitializer {
         registry.addMapping("/**").allowCredentials(false)
             .allowedMethods("*")
             .allowedOrigins("*")
+            .allowedHeaders("*")
     }
 
     override fun configureContentNegotiation(configurer: ContentNegotiationConfigurer) {

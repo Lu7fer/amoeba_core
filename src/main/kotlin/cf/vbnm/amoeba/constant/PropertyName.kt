@@ -9,6 +9,8 @@ class PropertyName private constructor() {
         const val SERVER_ADDRESS = SERVER_PREFIX + "address"
         const val SERVER_CONTEXT_PATH = SERVER_PREFIX + "contextPath"
         const val SERVER_SERVLET_PATH = SERVER_PREFIX + "servletPath"
+        const val SERVER_WS_PREFIX = SERVER_PREFIX + "ws."
+        const val SERVER_WS_SERVLET_PATH = SERVER_WS_PREFIX + "servletPath"
 
         const val LOGGER_PREFIX = "logger."
         const val LOGGER_LEVEL = LOGGER_PREFIX + "level"
@@ -22,6 +24,7 @@ class PropertyName private constructor() {
                 SERVER_SERVLET_PATH -> "/"
                 LOGGER_LEVEL -> "INFO"
                 LOGGER_OUTPUT -> "System.out"
+                SERVER_WS_SERVLET_PATH -> "/ws"
                 else -> ""
             }
         }
