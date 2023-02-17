@@ -1,7 +1,10 @@
 package cf.vbnm.amoeba.config
 
 import cf.vbnm.amoeba.util.LocalDateTimeSerializerFormatter
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.*
 import org.springframework.http.MediaType
 import org.springframework.http.converter.StringHttpMessageConverter
@@ -23,10 +26,15 @@ open class ServletConfiguration {
     }
 
     @Bean
-    open fun jackson2ObjectMapperFactoryBean(): Jackson2ObjectMapperFactoryBean {
+    open fun jackson2ObjectMapperFactoryBean(
+        @Autowired jsonDeserializer: List<JsonDeserializer<*>>,
+        @Autowired jsonSerializer: List<JsonSerializer<*>>,
+    ): Jackson2ObjectMapperFactoryBean {
         return Jackson2ObjectMapperFactoryBean().apply {
             this.setFailOnEmptyBeans(false)
             this.setSerializers(LocalDateTimeSerializerFormatter.INSTANCE)
+            this.setSerializers(*jsonSerializer.toTypedArray())
+            this.setDeserializers(*jsonDeserializer.toTypedArray())
         }
     }
 
