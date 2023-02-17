@@ -2,6 +2,7 @@ package cf.vbnm.amoeba.core.starter
 
 import cf.vbnm.amoeba.annotation.PropertyChangeCheck
 import cf.vbnm.amoeba.constant.PropertyName
+import cf.vbnm.amoeba.constant.PropertyName.Companion.LOGGER_LEVEL
 import cf.vbnm.amoeba.core.CoreProperty
 import cf.vbnm.amoeba.core.log.LoggerImpl
 import cf.vbnm.amoeba.core.log.LoggerImpl.Companion.defaultLogStream
@@ -19,7 +20,7 @@ import java.io.PrintStream
 class LoggerConfigurationStarter : Starter<LoggerConfigurationStarter> {
 
     private fun init(coreProperty: CoreProperty) {
-        val level = coreProperty["logger.level"]
+        val level = coreProperty[LOGGER_LEVEL]
         log.trace("Get property 'logger.level': {}", level)
         try {
             setLogLevel(Level.valueOf(level))
@@ -52,7 +53,7 @@ class LoggerConfigurationStarter : Starter<LoggerConfigurationStarter> {
     }
 
 
-    override fun setProperty(coreProperty: CoreProperty) {
+    override fun initProperty(coreProperty: CoreProperty) {
         init(coreProperty)
     }
 
@@ -66,6 +67,7 @@ class LoggerConfigurationStarter : Starter<LoggerConfigurationStarter> {
 
     @PropertyChangeCheck(PropertyName.LOGGER_OUTPUT)
     fun loggerOutputChangeCheck(value: String): Boolean {
+        log.debug("Event filter executed: loggerOutputChangeCheck({})", value)
         if (value == "System.out") {
             setPrintStream(defaultLogStream)
             return true
