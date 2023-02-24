@@ -1,6 +1,7 @@
 package cf.vbnm.amoeba.config
 
 
+import cf.vbnm.amoeba.core.spi.Starter
 import org.h2.jdbcx.JdbcDataSource
 import org.hibernate.dialect.H2Dialect
 import org.hibernate.jpa.HibernatePersistenceProvider
@@ -28,7 +29,6 @@ import javax.sql.DataSource
 )
 open class PersistenceDatabaseConfiguration {
 
-
     @Bean("persistenceDataSource")
     open fun persistenceDataSource(
         @Value("\${amoeba.jdbc.persistence.url:jdbc:h2:file:D:\\DevelopmentWorkspace/core/Amoeba/db/core}") url: String,
@@ -50,7 +50,12 @@ open class PersistenceDatabaseConfiguration {
         return LocalContainerEntityManagerFactoryBean().apply {
             this.dataSource = dataSource
             this.jpaVendorAdapter = jpaVendorAdapter
-            this.setPackagesToScan("cf.vbnm.amoeba.entity")
+            val list = ArrayList<String>()
+            list.add("cf.vbnm.amoeba.entity")
+            Starter.findServices().forEach {
+                list.addAll(it.getEntityPackages())
+            }
+            this.setPackagesToScan(*list.toTypedArray())
             persistenceProvider = HibernatePersistenceProvider()
             jpaDialect = HibernateJpaDialect()
         }

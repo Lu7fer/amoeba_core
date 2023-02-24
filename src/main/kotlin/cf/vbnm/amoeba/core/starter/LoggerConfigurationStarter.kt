@@ -8,15 +8,15 @@ import cf.vbnm.amoeba.core.log.LoggerImpl
 import cf.vbnm.amoeba.core.log.LoggerImpl.Companion.defaultLogStream
 import cf.vbnm.amoeba.core.log.LoggerImpl.Companion.setLoggerOutputFile
 import cf.vbnm.amoeba.core.log.Slf4kt
-import cf.vbnm.amoeba.core.log.Slf4kt.Companion.log
 import cf.vbnm.amoeba.core.spi.Starter
 import org.slf4j.event.Level
 import org.springframework.stereotype.Component
 import org.springframework.util.ResourceUtils
 import java.io.PrintStream
 
+private val log = Slf4kt.getLogger(LoggerConfigurationStarter::class.java)
+
 @Component
-@Slf4kt
 class LoggerConfigurationStarter : Starter<LoggerConfigurationStarter> {
 
     private fun init(coreProperty: CoreProperty) {

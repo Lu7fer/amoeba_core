@@ -1,10 +1,11 @@
 package cf.vbnm.amoeba.core
 
+
 import cf.vbnm.amoeba.core.log.Slf4kt
-import cf.vbnm.amoeba.core.log.Slf4kt.Companion.log
 import java.util.*
 
-@Slf4kt
+private val log = Slf4kt.getLogger(ThreadManager::class.java)
+
 class ThreadManager {
     companion object {
         private val threadList = LinkedList<Thread>()
@@ -18,10 +19,14 @@ class ThreadManager {
             threadList.add(thread)
         }
 
-        fun stopAll() {
+        init {
+            Runtime.getRuntime().addShutdownHook(Thread { stopAll() })
+        }
+
+        private fun stopAll() {
             threadList.forEach {
                 it.interrupt()
-                log.info("Thread: {} stopped", it.name)
+                log.warn("Thread: {} stopped", it.name)
             }
         }
     }

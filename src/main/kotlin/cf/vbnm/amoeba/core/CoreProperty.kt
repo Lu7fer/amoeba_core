@@ -2,11 +2,11 @@ package cf.vbnm.amoeba.core
 
 import cf.vbnm.amoeba.constant.PropertyName
 import cf.vbnm.amoeba.core.log.Slf4kt
-import cf.vbnm.amoeba.core.log.Slf4kt.Companion.log
 import cf.vbnm.amoeba.repository.persistence.PropertyRepository
 import org.springframework.stereotype.Service
 
-@Slf4kt
+private val log = Slf4kt.getLogger(CoreProperty::class.java)
+
 @Service
 open class CoreProperty(
     private val propertyRepository: PropertyRepository,

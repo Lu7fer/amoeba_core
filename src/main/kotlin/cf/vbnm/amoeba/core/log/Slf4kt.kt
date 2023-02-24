@@ -7,7 +7,10 @@ import org.slf4j.LoggerFactory
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Slf4kt {
     companion object {
-        val <reified T> T.log: Logger
-            inline get() = LoggerFactory.getLogger(T::class.java)
+        fun getLogger(clazz: Class<*>): Logger {
+            return LoggerFactory.getLogger(clazz)
+        }
     }
 }
+
+

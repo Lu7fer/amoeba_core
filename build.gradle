@@ -20,17 +20,18 @@ ext {
     kotlinCodeStyle = "official"
     kotlinCompilerJvmTarget = "1.8"
     springVersion = "6.0.0"
-    springJpaVersion = "2.7.3"
+    springJpaVersion = "3.0.0"
     jettyVersion = "11.0.13"
     tomcatVersion = "10.1.2"
     jacksonVersion = "2.13.4.2"
     kotlinVersion = "1.8.10"
     mybatisVersion = "3.5.11"
-    hibernateValidatorVersion = "6.2.5.Final"
+    hibernateValidatorVersion = "7.0.5.Final"
+    hibernateEntitymanagerVersion = "6.1.7.Final"
+    jakartaElVersion="4.0.2"
     snakeyamlVersion = "1.33"
     slf4jVersion = "2.0.5"
     gsonVersion = "2.9.0"
-    hibernateEntitymanagerVersion = "5.6.12.Final"
     kspVersion = "1.4"
     h2Version = "2.1.214"
 }
@@ -41,7 +42,8 @@ dependencies {
 //    testImplementation "org.springframework:spring-test:$springVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:5.9.0"
     implementation "org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion"
-    implementation "org.hibernate:hibernate-entitymanager:$hibernateEntitymanagerVersion"
+    implementation "org.hibernate.orm:hibernate-core:$hibernateEntitymanagerVersion"
+    implementation "org.glassfish:jakarta.el:$jakartaElVersion"
     implementation(
             "org.springframework.data:spring-data-jpa:$springJpaVersion",
             "org.springframework:spring-jdbc:$springVersion",

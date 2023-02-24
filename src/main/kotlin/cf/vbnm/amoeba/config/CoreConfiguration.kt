@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
 @Configuration
 @EnableJpaAuditing
-@Import(PersistenceDatabaseConfiguration::class, TransientDatabaseConfiguration::class)
+@Import(PersistenceDatabaseConfiguration::class)
 @ComponentScan("cf.vbnm.amoeba.core")
 open class CoreConfiguration

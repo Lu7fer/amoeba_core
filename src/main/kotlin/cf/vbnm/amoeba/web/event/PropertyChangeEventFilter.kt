@@ -2,14 +2,14 @@ package cf.vbnm.amoeba.web.event
 
 import cf.vbnm.amoeba.annotation.PropertyChangeCheck
 import cf.vbnm.amoeba.core.log.Slf4kt
-import cf.vbnm.amoeba.core.log.Slf4kt.Companion.log
 import cf.vbnm.amoeba.entity.table.core.Property
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Component
 import java.lang.reflect.Method
 
+private val log = Slf4kt.getLogger(PropertyChangeEventFilter::class.java)
+
 @Component
-@Slf4kt
 class PropertyChangeEventFilter(private val applicationContext: ApplicationContext) : EventFilter<PropertyChangeEvent> {
     private val annotatedMethods = HashMap<String, MutableList<Pair<Method, Any>>>()
     private var isInit = false

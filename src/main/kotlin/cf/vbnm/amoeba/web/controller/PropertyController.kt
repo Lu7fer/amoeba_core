@@ -1,11 +1,13 @@
 package cf.vbnm.amoeba.web.controller
 
-import cf.vbnm.amoeba.core.log.Slf4kt.Companion.log
+import cf.vbnm.amoeba.core.log.Slf4kt
 import cf.vbnm.amoeba.web.service.PropertyService
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+
+private val log = Slf4kt.getLogger(PropertyController::class.java)
 
 @RestController
 @RequestMapping("/core/property", produces = [MediaType.APPLICATION_JSON_VALUE])

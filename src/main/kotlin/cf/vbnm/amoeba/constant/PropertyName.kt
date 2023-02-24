@@ -9,6 +9,7 @@ class PropertyName private constructor() {
         const val SERVER_ADDRESS = SERVER_PREFIX + "address"
         const val SERVER_CONTEXT_PATH = SERVER_PREFIX + "contextPath"
         const val SERVER_SERVLET_PATH = SERVER_PREFIX + "servletPath"
+
         const val SERVER_WS_PREFIX = SERVER_PREFIX + "ws."
         const val SERVER_WS_SERVLET_PATH = SERVER_WS_PREFIX + "servletPath"
 

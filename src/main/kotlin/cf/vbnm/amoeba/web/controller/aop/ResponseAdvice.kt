@@ -2,9 +2,7 @@ package cf.vbnm.amoeba.web.controller.aop
 
 import cf.vbnm.amoeba.annotation.ResponseNotIntercept
 import cf.vbnm.amoeba.core.log.Slf4kt
-import cf.vbnm.amoeba.core.log.Slf4kt.Companion.log
 import cf.vbnm.amoeba.web.controller.wrapper.RespWrapper
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.core.MethodParameter
 import org.springframework.core.annotation.AnnotationUtils
@@ -16,9 +14,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 
+private val log = Slf4kt.getLogger(ResponseAdvice::class.java)
+
+
 @RestControllerAdvice
-@Slf4kt
-class ResponseAdvice(private val objectMapper: ObjectMapper) : ResponseBodyAdvice<Any> {
+class ResponseAdvice : ResponseBodyAdvice<Any> {
 
     @ExceptionHandler(Exception::class)
     fun restControllerRespWrap(exception: Exception, request: HttpServletRequest): RespWrapper<*> {
@@ -28,9 +28,9 @@ class ResponseAdvice(private val objectMapper: ObjectMapper) : ResponseBodyAdvic
 
     override fun supports(returnType: MethodParameter, converterType: Class<out HttpMessageConverter<*>>): Boolean {
         //若加了@ResponseNotIntercept 则该方法不用做统一的拦截
-        val annotatedElement = returnType.parameterType;
-        val annotation = AnnotationUtils.findAnnotation(annotatedElement, ResponseNotIntercept::class.java);
-        return annotation == null;
+        val annotatedElement = returnType.parameterType
+        val annotation = AnnotationUtils.findAnnotation(annotatedElement, ResponseNotIntercept::class.java)
+        return annotation == null
     }
 
     override fun beforeBodyWrite(
@@ -41,10 +41,7 @@ class ResponseAdvice(private val objectMapper: ObjectMapper) : ResponseBodyAdvic
         request: ServerHttpRequest,
         response: ServerHttpResponse
     ): Any {
-        if (body is RespWrapper<*>) return body;
-//        if (body is String) {
-//            return objectMapper.writeValueAsString(RespWrapper.ok(body).apply { path = request.uri.path })
-//        }
+        if (body is RespWrapper<*>) return body
         return RespWrapper.ok(body).apply { path = request.uri.path }
     }
 }

@@ -46,3 +46,4 @@ bin/
 /.idea/dataSources.local.xml
 /.idea/workspace.xml
 db/
+/.idea/codeStyles/

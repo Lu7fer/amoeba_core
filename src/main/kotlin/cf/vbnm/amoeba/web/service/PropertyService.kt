@@ -1,12 +1,14 @@
 package cf.vbnm.amoeba.web.service
 
 import cf.vbnm.amoeba.core.CoreProperty
-import cf.vbnm.amoeba.core.log.Slf4kt.Companion.log
+import cf.vbnm.amoeba.core.log.Slf4kt
 import cf.vbnm.amoeba.entity.table.core.Property
 import cf.vbnm.amoeba.repository.persistence.PropertyRepository
 import cf.vbnm.amoeba.web.event.PropertyChangeEventBuilder
 import cf.vbnm.amoeba.web.event.PropertyChangeEventFilter
 import org.springframework.stereotype.Service
+
+private val log = Slf4kt.getLogger(PropertyService::class.java)
 
 @Service
 class PropertyService(

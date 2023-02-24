@@ -1,14 +1,12 @@
 package cf.vbnm.amoeba
 
 import cf.vbnm.amoeba.core.CoreContext
-import cf.vbnm.amoeba.core.ThreadManager
 import cf.vbnm.amoeba.core.log.Slf4kt
-import cf.vbnm.amoeba.core.log.Slf4kt.Companion.log
 import org.springframework.context.support.AbstractApplicationContext
 import kotlin.system.exitProcess
 
+private val log = Slf4kt.getLogger(Amoeba::class.java)
 
-@Slf4kt
 class Amoeba {
     companion object {
         fun runApplication(): AbstractApplicationContext {
@@ -23,7 +21,6 @@ class Amoeba {
                 )
                 return CoreContext.getApplicationContext()
             } catch (e: Throwable) {
-                ThreadManager.stopAll()
                 e.printStackTrace()
                 exitProcess(-1)
             }

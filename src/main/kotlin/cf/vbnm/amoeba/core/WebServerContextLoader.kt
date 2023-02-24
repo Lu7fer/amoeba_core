@@ -1,15 +1,13 @@
-package cf.vbnm.amoeba.core.starter
+package cf.vbnm.amoeba.core
 
+import cf.vbnm.amoeba.config.PreparedBeans
 import cf.vbnm.amoeba.config.ServletConfiguration
 import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_ADDRESS
 import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_CONTEXT_PATH
 import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_PORT
 import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_SERVLET_PATH
 import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_WS_SERVLET_PATH
-import cf.vbnm.amoeba.core.CoreContext
-import cf.vbnm.amoeba.core.CoreProperty
 import cf.vbnm.amoeba.core.log.Slf4kt
-import cf.vbnm.amoeba.core.log.Slf4kt.Companion.log
 import cf.vbnm.amoeba.core.spi.Starter
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler
@@ -26,9 +24,9 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.DispatcherServlet
 import java.net.InetSocketAddress
 
+private val log = Slf4kt.getLogger(WebServerContextLoader::class.java)
 
 @Component
-@Slf4kt
 class WebServerContextLoader(private val applicationContext: AbstractApplicationContext) {
     private lateinit var jettyServer: Server
     private lateinit var webApplicationContext: AbstractApplicationContext
@@ -62,7 +60,7 @@ class WebServerContextLoader(private val applicationContext: AbstractApplication
             JettyWebSocketServletContainerInitializer.configure(this, null)
         }
 
-        webApplicationContext.register(ServletConfiguration::class.java)
+        webApplicationContext.register(ServletConfiguration::class.java, PreparedBeans::class.java)
         val providers = Starter.findServices()
         providers.forEach {
             webApplicationContext.register(it.javaClass)

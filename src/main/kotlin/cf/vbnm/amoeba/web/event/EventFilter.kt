@@ -1,6 +1,6 @@
 package cf.vbnm.amoeba.web.event
 
-import cf.vbnm.amoeba.core.log.Slf4kt.Companion.log
+import cf.vbnm.amoeba.core.log.Slf4kt
 import org.springframework.beans.factory.getBeansWithAnnotation
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Configuration
@@ -16,6 +16,9 @@ interface EventFilter<E : Event<*>> {
 
     fun init()
 
+    companion object {
+        val log = Slf4kt.getLogger(EventFilter::class.java)
+    }
 }
 
 
@@ -29,12 +32,12 @@ inline fun <reified A : Annotation> EventFilter<*>.findAnnotatedMethods(applicat
         u.javaClass.methods.forEach {
             val anno = AnnotationUtils.findAnnotation(it, A::class.java)
             if (anno != null) {
-                log.trace("Add annotated method: {}", it)
+                EventFilter.log.trace("Add annotated method: {}", it)
                 annotatedMethodList.add(Pair(it, u))
             }
         }
     }
-    log.info(" Find methods with {}: {}", A::class.java.name, annotatedMethodList)
+    EventFilter.log.info(" Find methods with {}: {}", A::class.java.name, annotatedMethodList)
     return annotatedMethodList
 }
 
