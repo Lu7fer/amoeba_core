@@ -16,7 +16,8 @@ import java.nio.charset.StandardCharsets
 
 @Configuration
 @ComponentScans(
-    ComponentScan("cf.vbnm.amoeba.web")
+    ComponentScan("cf.vbnm.amoeba.web"),
+    ComponentScan("cf.vbnm.amoeba.initial")
 )
 @Import(WebMvcConfigurerImpl::class)
 open class ServletConfiguration {
