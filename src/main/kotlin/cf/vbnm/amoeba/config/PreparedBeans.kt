@@ -11,7 +11,10 @@ import org.springframework.web.client.RestTemplate
 @Configuration
 open class PreparedBeans {
 
-    @Deprecated("使用 open feign 代替", ReplaceWith("will remove"))
+    /**
+     * 暂时使用
+     * */
+    @Bean
     open fun getRestTemplate(): RestTemplate {
         return RestTemplate()
     }
