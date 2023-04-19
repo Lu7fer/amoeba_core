@@ -24,5 +24,4 @@ open class Property() {
         return "Property(name='$name', value='$value')"
     }
 
-
 }

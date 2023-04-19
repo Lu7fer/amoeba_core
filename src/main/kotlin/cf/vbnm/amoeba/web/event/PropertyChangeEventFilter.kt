@@ -12,6 +12,8 @@ private val log = Slf4kt.getLogger(PropertyChangeEventFilter::class.java)
 @Component
 class PropertyChangeEventFilter(private val applicationContext: ApplicationContext) : EventFilter<PropertyChangeEvent> {
     private val annotatedMethods = HashMap<String, MutableList<Pair<Method, Any>>>()
+
+    @Volatile
     private var isInit = false
     override fun init() {
         val annotatedMethods = findAnnotatedMethods<PropertyChangeCheck>(applicationContext)

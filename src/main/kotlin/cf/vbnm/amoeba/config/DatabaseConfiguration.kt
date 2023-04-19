@@ -6,7 +6,6 @@ import org.h2.jdbcx.JdbcDataSource
 import org.hibernate.dialect.H2Dialect
 import org.hibernate.jpa.HibernatePersistenceProvider
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -16,7 +15,9 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.Database
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
+import org.springframework.util.ResourceUtils
 import org.springframework.web.servlet.config.annotation.*
+import java.io.File
 import java.util.*
 import javax.sql.DataSource
 
@@ -29,16 +30,36 @@ import javax.sql.DataSource
 )
 open class PersistenceDatabaseConfiguration {
 
+    companion object {
+        private fun checkRunInIDEA(): Boolean {
+            return try {
+                Class.forName("com.intellij.rt.execution.application.AppMainV2")
+                true
+            } catch (_: ClassNotFoundException) {
+                false
+            }
+        }
+    }
+
     @Bean("persistenceDataSource")
-    open fun persistenceDataSource(
-        @Value("\${amoeba.jdbc.persistence.url:jdbc:h2:file:D:\\DevelopmentWorkspace/core/Amoeba/db/core}") url: String,
-        @Value("\${amoeba.jdbc.persistence.username:amoeba}") username: String,
-        @Value("\${amoeba.jdbc.persistence.password:amoeba}") password: String,
-    ): DataSource {
+    open fun persistenceDataSource(): DataSource {
+        var file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX)
+        file = if (checkRunInIDEA()) {
+            File("D:\\DevelopmentWorkspace\\amoeba\\qdroid\\db")
+        } else {
+            File(file, "db")
+        }
+        file.mkdirs()
+        if (!file.exists()) {
+            throw Error("Create database folder failure")
+        }
+        val dbUrl = "jdbc:h2:file:${file.absolutePath.removeSuffix("/").removeSuffix("\\")}/core"
+        val username = "amoeba"
+        val password = "amoeba"
         return JdbcDataSource().apply {
             this.user = username
             this.password = password
-            this.setUrl(url)
+            this.setUrl(dbUrl)
         }
     }
 
@@ -80,6 +101,7 @@ open class PersistenceDatabaseConfiguration {
 
 }
 
+/*
 @Configuration
 @ComponentScan("cf.vbnm.amoeba.repository.transition")
 @EnableJpaRepositories(
@@ -133,4 +155,4 @@ open class TransientDatabaseConfiguration {
         }
     }
 
-}
+}*/

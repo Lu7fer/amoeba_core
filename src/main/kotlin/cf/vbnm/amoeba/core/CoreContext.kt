@@ -11,7 +11,7 @@ class CoreContext {
         private val webApplicationContext: AbstractApplicationContext
         private val jpaContext: AbstractApplicationContext = AnnotationConfigApplicationContext().apply {
             Starter.findServices().forEach {
-                val clazz = it.getJpaConfigObject()
+                val clazz = it.getJpaConfigClass()
                 if (clazz != Any::class.java)
                     this.register(clazz)
             }

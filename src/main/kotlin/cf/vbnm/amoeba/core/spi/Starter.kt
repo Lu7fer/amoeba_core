@@ -29,7 +29,7 @@ interface Starter<T> : FactoryBean<T> {
         return arrayOf()
     }
 
-    fun getJpaConfigObject(): Class<*> {
+    fun getJpaConfigClass(): Class<*> {
         return Any::class.java
     }
 }

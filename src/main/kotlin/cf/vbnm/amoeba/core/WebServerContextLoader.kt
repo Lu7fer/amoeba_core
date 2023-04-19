@@ -9,10 +9,16 @@ import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_SERVLET_PATH
 import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_WS_SERVLET_PATH
 import cf.vbnm.amoeba.core.log.Slf4kt
 import cf.vbnm.amoeba.core.spi.Starter
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.server.ServerConnector
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
+import org.eclipse.jetty.util.thread.ThreadPool
 import org.eclipse.jetty.websocket.server.JettyWebSocketServlet
 import org.eclipse.jetty.websocket.server.JettyWebSocketServletFactory
 import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer
@@ -42,7 +48,12 @@ class WebServerContextLoader(private val applicationContext: AbstractApplication
     fun creatWebApplicationContext(coreProperty: CoreProperty): AbstractApplicationContext {
         val webApplicationContext = AnnotationConfigWebApplicationContext()
         webApplicationContext.parent = applicationContext
-        jettyServer = Server(getInetSocketAddress(coreProperty))
+        jettyServer = Server(JettyThreadPool())
+        jettyServer.addConnector(ServerConnector(jettyServer).apply {
+            val socketAddress = getInetSocketAddress(coreProperty)
+            port = socketAddress.port
+            host = socketAddress.hostName
+        })
         jettyServer.handler = ServletContextHandler().apply {
             errorHandler = ErrorPageErrorHandler()
             contextPath = coreProperty[SERVER_CONTEXT_PATH]
@@ -93,5 +104,31 @@ class WebServerContextLoader(private val applicationContext: AbstractApplication
                 factory.register(this.javaClass)
             }
         }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private class JettyThreadPool : ThreadPool {
+        override fun execute(command: Runnable) {
+            GlobalScope.launch {
+                command.run()
+            }
+        }
+
+        override fun join() {
+            GlobalScope.cancel("JettyServerStop")
+        }
+
+        override fun getThreads(): Int {
+            return 10
+        }
+
+        override fun getIdleThreads(): Int {
+            return 10
+        }
+
+        override fun isLowOnThreads(): Boolean {
+            return false
+        }
+
     }
 }
