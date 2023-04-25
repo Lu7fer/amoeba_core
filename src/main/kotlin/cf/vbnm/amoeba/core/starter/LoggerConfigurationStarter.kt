@@ -23,7 +23,7 @@ class LoggerConfigurationStarter : Starter<LoggerConfigurationStarter> {
         val level = coreProperty[LOGGER_LEVEL]
         log.trace("Get property 'logger.level': {}", level)
         try {
-            setLogLevel(Level.valueOf(level))
+            setLogLevel(Level.valueOf(level!!.uppercase()))
         } catch (e: Exception) {
             setLogLevel(Level.INFO)
             log.warn("Logger level parse error", e)
@@ -34,7 +34,7 @@ class LoggerConfigurationStarter : Starter<LoggerConfigurationStarter> {
             setPrintStream(System.out)
             return
         }
-        val file = ResourceUtils.getFile(output)
+        val file = ResourceUtils.getFile(output!!)
         setLoggerOutputFile(file)
     }
 
@@ -74,6 +74,18 @@ class LoggerConfigurationStarter : Starter<LoggerConfigurationStarter> {
         }
         val file = ResourceUtils.getFile(value)
         return setLoggerOutputFile(file)
+    }
+
+    @PropertyChangeCheck(LOGGER_LEVEL)
+    fun loggerLevelChangeCheck(value: String): Boolean {
+        log.debug("Event filter executed: loggerLevelChangeCheck({})", value)
+        return try {
+            setLogLevel(Level.valueOf(value.uppercase()))
+            true
+        } catch (e: Exception) {
+            log.warn("set property failure:{}", value, e)
+            false
+        }
     }
 
 }

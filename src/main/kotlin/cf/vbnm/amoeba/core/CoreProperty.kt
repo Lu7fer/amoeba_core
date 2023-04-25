@@ -13,12 +13,12 @@ open class CoreProperty(
     private val propertyRepository: PropertyRepository,
 ) {
 
-    operator fun get(name: String): String {
+    operator fun get(name: String): String? {
         val result = propertyRepository.findById(name)
         if (result.isPresent) {
             return result.get().value
         }
-        return PropertyName.defaultProperties(name).also { log.info("Get property: '{}': {}", name, this) }
+        return PropertyName.defaultProperties(name).also { log.info("Get property: '{}': {}", name, it) }
     }
 
     /**

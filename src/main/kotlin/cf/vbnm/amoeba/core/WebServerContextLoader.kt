@@ -9,16 +9,12 @@ import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_SERVLET_PATH
 import cf.vbnm.amoeba.constant.PropertyName.Companion.SERVER_WS_SERVLET_PATH
 import cf.vbnm.amoeba.core.log.Slf4kt
 import cf.vbnm.amoeba.core.spi.Starter
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
-import org.eclipse.jetty.util.thread.ThreadPool
+import org.eclipse.jetty.util.thread.ExecutorThreadPool
 import org.eclipse.jetty.websocket.server.JettyWebSocketServlet
 import org.eclipse.jetty.websocket.server.JettyWebSocketServletFactory
 import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer
@@ -38,17 +34,13 @@ class WebServerContextLoader(private val applicationContext: AbstractApplication
     private lateinit var webApplicationContext: AbstractApplicationContext
 
 
-    fun getWebApplicationContext(): AbstractApplicationContext {
-        return webApplicationContext
-    }
-
     /**
      * 创建一个Jetty容器和相应的ApplicationContext并启动
      * */
     fun creatWebApplicationContext(coreProperty: CoreProperty): AbstractApplicationContext {
         val webApplicationContext = AnnotationConfigWebApplicationContext()
         webApplicationContext.parent = applicationContext
-        jettyServer = Server(JettyThreadPool())
+        jettyServer = Server(ExecutorThreadPool(5, 3))
         jettyServer.addConnector(ServerConnector(jettyServer).apply {
             val socketAddress = getInetSocketAddress(coreProperty)
             port = socketAddress.port
@@ -84,7 +76,6 @@ class WebServerContextLoader(private val applicationContext: AbstractApplication
         jettyServer.stopAtShutdown = true
         jettyServer.start()
         webApplicationContext.registerShutdownHook()
-        webApplicationContext.refresh()
         log.info("Web server started...")
         this.webApplicationContext = webApplicationContext
         return webApplicationContext
@@ -92,43 +83,15 @@ class WebServerContextLoader(private val applicationContext: AbstractApplication
 
     private fun getInetSocketAddress(coreProperty: CoreProperty): InetSocketAddress {
         val address = coreProperty[SERVER_ADDRESS]
-        val port = coreProperty[SERVER_PORT].toInt()
-        return InetSocketAddress.createUnresolved(address, port)
+        val port = coreProperty[SERVER_PORT]?.toInt()
+        return InetSocketAddress.createUnresolved(address, port!!)
     }
 
-    companion object {
-        class WebSocketServlet : JettyWebSocketServlet() {
-            private val coreProperty = CoreContext.getCoreContext().getBean(CoreProperty::class.java)
-            override fun configure(factory: JettyWebSocketServletFactory) {
-                factory.getMapping(coreProperty[SERVER_WS_SERVLET_PATH])
-                factory.register(this.javaClass)
-            }
+    class WebSocketServlet : JettyWebSocketServlet() {
+        private val coreProperty = CoreContext.getCoreContext().getBean(CoreProperty::class.java)
+        override fun configure(factory: JettyWebSocketServletFactory) {
+            factory.getMapping(coreProperty[SERVER_WS_SERVLET_PATH])
+            factory.register(this.javaClass)
         }
-    }
-
-    @OptIn(DelicateCoroutinesApi::class)
-    private class JettyThreadPool : ThreadPool {
-        override fun execute(command: Runnable) {
-            GlobalScope.launch {
-                command.run()
-            }
-        }
-
-        override fun join() {
-            GlobalScope.cancel("JettyServerStop")
-        }
-
-        override fun getThreads(): Int {
-            return 10
-        }
-
-        override fun getIdleThreads(): Int {
-            return 10
-        }
-
-        override fun isLowOnThreads(): Boolean {
-            return false
-        }
-
     }
 }

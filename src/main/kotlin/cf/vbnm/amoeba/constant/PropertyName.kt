@@ -17,7 +17,7 @@ class PropertyName private constructor() {
         const val LOGGER_LEVEL = LOGGER_PREFIX + "level"
         const val LOGGER_OUTPUT = LOGGER_PREFIX + "output"
 
-        fun defaultProperties(name: String): String {
+        fun defaultProperties(name: String): String? {
             return when (name) {
                 SERVER_PORT -> "8089"
                 SERVER_ADDRESS -> "0.0.0.0"
@@ -26,7 +26,7 @@ class PropertyName private constructor() {
                 LOGGER_LEVEL -> "INFO"
                 LOGGER_OUTPUT -> "System.out"
                 SERVER_WS_SERVLET_PATH -> "/ws"
-                else -> ""
+                else -> null
             }
         }
     }
