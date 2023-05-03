@@ -21,8 +21,8 @@ class LoggerImpl(private val name: String) : Logger {
 
     companion object {
         private val log = LoggerFactory.getLogger(LoggerImpl::class.java)
-        private const val CONTROLLED_LENGTH = 40
-        private const val THREAD_NAME_MIN_LENGTH = 17
+        private const val LOGGER_NAME_LENGTH = 40
+        private const val THREAD_NAME_MIN_LENGTH = 20
         private const val LOGGER_BUFFER_CAPACITY = 8192
 
         @Volatile
@@ -39,8 +39,7 @@ class LoggerImpl(private val name: String) : Logger {
 
         fun setLogStream(printStream: PrintStream) {
             log.info(
-                "Logger stream setting to: {}",
-                if (printStream === System.out) "System.out" else printStream.toString()
+                "Logger stream setting to: {}", if (printStream === System.out) "System.out" else printStream.toString()
             )
             logStream = if (printStream.checkError()) {
                 System.out
@@ -124,7 +123,7 @@ class LoggerImpl(private val name: String) : Logger {
             var shortenedLength = name.length
             for ((i, s) in strings.withIndex()) {
                 if (i == strings.lastIndex) break
-                if (shortenedLength <= CONTROLLED_LENGTH) {
+                if (shortenedLength <= LOGGER_NAME_LENGTH) {
                     for (j in i until strings.lastIndex) {
                         sb.append(strings[j]).append('.')
                     }
@@ -146,14 +145,18 @@ class LoggerImpl(private val name: String) : Logger {
         return name
     }
 
+    private fun formatThreadName(): CharSequence {
+        val s = Thread.currentThread().name
+        if (s.length <= THREAD_NAME_MIN_LENGTH) return String.format("%-${THREAD_NAME_MIN_LENGTH}s", s)
+        return "...${s.substring(s.length - THREAD_NAME_MIN_LENGTH + 3)}"
+    }
+
     override fun trace(msg: String?, t: Throwable?) {
         if (isTraceEnabled) logQueue.offer(
             "${ColorConstants.getColorPattern(ColorConstants.WHITE_FG)}[${String.format("%-5s", Level.TRACE)}] ${
                 dateFormatter.format(Date())
-            }|[${
-                String.format("%-${THREAD_NAME_MIN_LENGTH}s", Thread.currentThread().name)
-            }] ${
-                String.format("%-${CONTROLLED_LENGTH}s", shortenedName)
+            } [${formatThreadName()}] ${
+                String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
             }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
         )
     }
@@ -162,10 +165,8 @@ class LoggerImpl(private val name: String) : Logger {
         if (isTraceEnabled) logQueue.offer(
             "${ColorConstants.getColorPattern(ColorConstants.WHITE_FG)}[${String.format("%-5s", Level.TRACE)}] ${
                 dateFormatter.format(Date())
-            }|${marker ?: ""}|[${
-                String.format("%-${THREAD_NAME_MIN_LENGTH}s", Thread.currentThread().name)
-            }] ${
-                String.format("%-${CONTROLLED_LENGTH}s", shortenedName)
+            }|${marker ?: ""} [${formatThreadName()}] ${
+                String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
             }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
         )
     }
@@ -174,10 +175,8 @@ class LoggerImpl(private val name: String) : Logger {
         if (isDebugEnabled) logQueue.offer(
             "${ColorConstants.getColorPattern(ColorConstants.BLUE_FG)}[${String.format("%-5s", Level.DEBUG)}] ${
                 dateFormatter.format(Date())
-            }|[${
-                String.format("%-${THREAD_NAME_MIN_LENGTH}s", Thread.currentThread().name)
-            }] ${
-                String.format("%-${CONTROLLED_LENGTH}s", shortenedName)
+            } [${formatThreadName()}] ${
+                String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
             }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
         )
     }
@@ -186,10 +185,8 @@ class LoggerImpl(private val name: String) : Logger {
         if (isDebugEnabled) logQueue.offer(
             "${ColorConstants.getColorPattern(ColorConstants.BLUE_FG)}[${String.format("%-5s", Level.DEBUG)}] ${
                 dateFormatter.format(Date())
-            }|${marker ?: ""}|[${
-                String.format("%-${THREAD_NAME_MIN_LENGTH}s", Thread.currentThread().name)
-            }] ${
-                String.format("%-${CONTROLLED_LENGTH}s", shortenedName)
+            }|${marker ?: ""} [${formatThreadName()}] ${
+                String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
             }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
         )
     }
@@ -198,10 +195,8 @@ class LoggerImpl(private val name: String) : Logger {
         if (isInfoEnabled) logQueue.offer(
             "${ColorConstants.getColorPattern(ColorConstants.CYAN_FG)}[${String.format("%-5s", Level.INFO)}] ${
                 dateFormatter.format(Date())
-            }|[${
-                String.format("%-${THREAD_NAME_MIN_LENGTH}s", Thread.currentThread().name)
-            }] ${
-                String.format("%-${CONTROLLED_LENGTH}s", shortenedName)
+            } [${formatThreadName()}] ${
+                String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
             }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
         )
     }
@@ -210,10 +205,8 @@ class LoggerImpl(private val name: String) : Logger {
         logQueue.offer(
             "${ColorConstants.getColorPattern(ColorConstants.CYAN_FG)}[${String.format("%-5s", Level.INFO)}] ${
                 dateFormatter.format(Date())
-            }|${marker ?: ""}|[${
-                String.format("%-${THREAD_NAME_MIN_LENGTH}s", Thread.currentThread().name)
-            }] ${
-                String.format("%-${CONTROLLED_LENGTH}s", shortenedName)
+            }|${marker ?: ""} [${formatThreadName()}] ${
+                String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
             }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
         )
     }
@@ -222,10 +215,8 @@ class LoggerImpl(private val name: String) : Logger {
         if (isWarnEnabled) logQueue.offer(
             "${ColorConstants.getColorPattern(ColorConstants.YELLOW_FG)}[${String.format("%-5s", Level.WARN)}] ${
                 dateFormatter.format(Date())
-            }|[${
-                String.format("%-${THREAD_NAME_MIN_LENGTH}s", Thread.currentThread().name)
-            }] ${
-                String.format("%-${CONTROLLED_LENGTH}s", shortenedName)
+            } [${formatThreadName()}] ${
+                String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
             }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
         )
     }
@@ -234,10 +225,8 @@ class LoggerImpl(private val name: String) : Logger {
         if (isWarnEnabled) logQueue.offer(
             "${ColorConstants.getColorPattern(ColorConstants.YELLOW_FG)}[${String.format("%-5s", Level.WARN)}] ${
                 dateFormatter.format(Date())
-            }|${marker ?: ""}|[${
-                String.format("%-${THREAD_NAME_MIN_LENGTH}s", Thread.currentThread().name)
-            }] ${
-                String.format("%-${CONTROLLED_LENGTH}s", shortenedName)
+            }|${marker ?: ""} [${formatThreadName()}] ${
+                String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
             }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
         )
     }
@@ -246,10 +235,8 @@ class LoggerImpl(private val name: String) : Logger {
         if (isErrorEnabled) logQueue.offer(
             "${ColorConstants.getColorPattern(ColorConstants.RED_FG)}[${String.format("%-5s", Level.ERROR)}] ${
                 dateFormatter.format(Date())
-            }|[${
-                String.format("%-${THREAD_NAME_MIN_LENGTH}s", Thread.currentThread().name)
-            }] ${
-                String.format("%-${CONTROLLED_LENGTH}s", shortenedName)
+            } [${formatThreadName()}] ${
+                String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
             }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
         )
     }
@@ -258,10 +245,8 @@ class LoggerImpl(private val name: String) : Logger {
         if (isErrorEnabled) logQueue.offer(
             "${ColorConstants.getColorPattern(ColorConstants.RED_FG)}[${String.format("%-5s", Level.ERROR)}] ${
                 dateFormatter.format(Date())
-            }|${marker ?: ""}|[${
-                String.format("%-${THREAD_NAME_MIN_LENGTH}s", Thread.currentThread().name)
-            }] ${
-                String.format("%-${CONTROLLED_LENGTH}s", shortenedName)
+            }|${marker ?: ""} [${formatThreadName()}] ${
+                String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
             }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
         )
     }
@@ -307,8 +292,7 @@ class LoggerImpl(private val name: String) : Logger {
 
     override fun trace(marker: Marker?, format: String?, arg1: Any?, arg2: Any?) {
         if (isTraceEnabled) trace(
-            marker,
-            format.replaceFirstLogPlaceHolder(arg1).replaceFirstLogPlaceHolder(arg2).toString()
+            marker, format.replaceFirstLogPlaceHolder(arg1).replaceFirstLogPlaceHolder(arg2).toString()
         )
     }
 
@@ -362,8 +346,7 @@ class LoggerImpl(private val name: String) : Logger {
 
     override fun debug(marker: Marker?, format: String?, arg1: Any?, arg2: Any?) {
         if (isDebugEnabled) debug(
-            marker,
-            format.replaceFirstLogPlaceHolder(arg1).replaceFirstLogPlaceHolder(arg2).toString()
+            marker, format.replaceFirstLogPlaceHolder(arg1).replaceFirstLogPlaceHolder(arg2).toString()
         )
     }
 
