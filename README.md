@@ -33,3 +33,5 @@ Core使用Java SPI加载 `cf.vbnm.amoeba.core.spi.Starter` 实现类, 并将该�
 ![GPLv3](https://www.gnu.org/graphics/gplv3-or-later.svg)
 
 [协议详情](https://www.gnu.org/licenses/gpl-3.0.txt)
+
+##  

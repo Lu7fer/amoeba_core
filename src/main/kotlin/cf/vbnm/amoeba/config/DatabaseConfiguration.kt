@@ -15,7 +15,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.Database
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
-import org.springframework.util.ResourceUtils
 import org.springframework.web.servlet.config.annotation.*
 import java.io.File
 import java.util.*
@@ -43,7 +42,7 @@ open class PersistenceDatabaseConfiguration {
 
     @Bean("persistenceDataSource")
     open fun persistenceDataSource(): DataSource {
-        var file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX)
+        var file = File(this::class.java.protectionDomain.codeSource.location.file).parentFile
         file = if (checkRunInIDEA()) {
             File("D:\\DevelopmentWorkspace\\amoeba\\qdroid\\db")
         } else {

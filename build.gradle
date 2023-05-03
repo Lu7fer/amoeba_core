@@ -98,10 +98,14 @@ test {
 }
 build {
     jar {
-
+        manifest {
+            attributes 'Main-Class': 'cf.vbnm.amoeba.AmoebaKt'
+        }
     }
 }
+distributions {
 
+}
 kotlin {
     jvmToolchain(17)
 }
