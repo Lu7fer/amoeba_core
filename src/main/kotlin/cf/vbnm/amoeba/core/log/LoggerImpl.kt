@@ -147,107 +147,157 @@ class LoggerImpl(private val name: String) : Logger {
 
     private fun formatThreadName(): CharSequence {
         val s = Thread.currentThread().name
-        if (s.length <= THREAD_NAME_MIN_LENGTH) return String.format("%-${THREAD_NAME_MIN_LENGTH}s", s)
+        if (s.length <= THREAD_NAME_MIN_LENGTH) return String.format("%${THREAD_NAME_MIN_LENGTH}s", s)
         return "...${s.substring(s.length - THREAD_NAME_MIN_LENGTH + 3)}"
     }
 
     override fun trace(msg: String?, t: Throwable?) {
         if (isTraceEnabled) logQueue.offer(
-            "${ColorConstants.getColorPattern(ColorConstants.WHITE_FG)}[${String.format("%-5s", Level.TRACE)}] ${
+            "[${ColorConstants.getColorPattern(ColorConstants.WHITE_FG)}${
+                String.format(
+                    "%-5s",
+                    Level.TRACE
+                )
+            }${ColorConstants.getDefault()}] ${
                 dateFormatter.format(Date())
             } [${formatThreadName()}] ${
                 String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
-            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
+            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}"
         )
     }
 
     override fun trace(marker: Marker?, msg: String?, t: Throwable?) {
         if (isTraceEnabled) logQueue.offer(
-            "${ColorConstants.getColorPattern(ColorConstants.WHITE_FG)}[${String.format("%-5s", Level.TRACE)}] ${
+            "[${ColorConstants.getColorPattern(ColorConstants.WHITE_FG)}${
+                String.format(
+                    "%-5s",
+                    Level.TRACE
+                )
+            }${ColorConstants.getDefault()}] ${
                 dateFormatter.format(Date())
             }|${marker ?: ""} [${formatThreadName()}] ${
                 String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
-            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
+            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}"
         )
     }
 
     override fun debug(msg: String?, t: Throwable?) {
         if (isDebugEnabled) logQueue.offer(
-            "${ColorConstants.getColorPattern(ColorConstants.BLUE_FG)}[${String.format("%-5s", Level.DEBUG)}] ${
+            "[${ColorConstants.getColorPattern(ColorConstants.BLUE_FG)}${
+                String.format(
+                    "%-5s",
+                    Level.DEBUG
+                )
+            }${ColorConstants.getDefault()}] ${
                 dateFormatter.format(Date())
             } [${formatThreadName()}] ${
                 String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
-            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
+            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}"
         )
     }
 
     override fun debug(marker: Marker?, msg: String?, t: Throwable?) {
         if (isDebugEnabled) logQueue.offer(
-            "${ColorConstants.getColorPattern(ColorConstants.BLUE_FG)}[${String.format("%-5s", Level.DEBUG)}] ${
+            "[${ColorConstants.getColorPattern(ColorConstants.BLUE_FG)}${
+                String.format(
+                    "%-5s",
+                    Level.DEBUG
+                )
+            }${ColorConstants.getDefault()}] ${
                 dateFormatter.format(Date())
             }|${marker ?: ""} [${formatThreadName()}] ${
                 String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
-            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
+            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}"
         )
     }
 
     override fun info(msg: String?, t: Throwable?) {
         if (isInfoEnabled) logQueue.offer(
-            "${ColorConstants.getColorPattern(ColorConstants.CYAN_FG)}[${String.format("%-5s", Level.INFO)}] ${
+            "[${ColorConstants.getColorPattern(ColorConstants.CYAN_FG)}${
+                String.format(
+                    "%-5s",
+                    Level.INFO
+                )
+            }${ColorConstants.getDefault()}] ${
                 dateFormatter.format(Date())
             } [${formatThreadName()}] ${
                 String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
-            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
+            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}"
         )
     }
 
     override fun info(marker: Marker?, msg: String?, t: Throwable?) {
         logQueue.offer(
-            "${ColorConstants.getColorPattern(ColorConstants.CYAN_FG)}[${String.format("%-5s", Level.INFO)}] ${
+            "[${ColorConstants.getColorPattern(ColorConstants.CYAN_FG)}${
+                String.format(
+                    "%-5s",
+                    Level.INFO
+                )
+            }${ColorConstants.getDefault()}] ${
                 dateFormatter.format(Date())
             }|${marker ?: ""} [${formatThreadName()}] ${
                 String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
-            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
+            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}"
         )
     }
 
     override fun warn(msg: String?, t: Throwable?) {
         if (isWarnEnabled) logQueue.offer(
-            "${ColorConstants.getColorPattern(ColorConstants.YELLOW_FG)}[${String.format("%-5s", Level.WARN)}] ${
+            "[${ColorConstants.getColorPattern(ColorConstants.YELLOW_FG)}${
+                String.format(
+                    "%-5s",
+                    Level.WARN
+                )
+            }${ColorConstants.getDefault()}] ${
                 dateFormatter.format(Date())
             } [${formatThreadName()}] ${
                 String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
-            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
+            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}"
         )
     }
 
     override fun warn(marker: Marker?, msg: String?, t: Throwable?) {
         if (isWarnEnabled) logQueue.offer(
-            "${ColorConstants.getColorPattern(ColorConstants.YELLOW_FG)}[${String.format("%-5s", Level.WARN)}] ${
+            "[${ColorConstants.getColorPattern(ColorConstants.YELLOW_FG)}${
+                String.format(
+                    "%-5s",
+                    Level.WARN
+                )
+            }${ColorConstants.getDefault()}] ${
                 dateFormatter.format(Date())
             }|${marker ?: ""} [${formatThreadName()}] ${
                 String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
-            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
+            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}"
         )
     }
 
     override fun error(msg: String?, t: Throwable?) {
         if (isErrorEnabled) logQueue.offer(
-            "${ColorConstants.getColorPattern(ColorConstants.RED_FG)}[${String.format("%-5s", Level.ERROR)}] ${
+            "[${ColorConstants.getColorPattern(ColorConstants.RED_FG)}${
+                String.format(
+                    "%-5s",
+                    Level.ERROR
+                )
+            }${ColorConstants.getDefault()}] ${
                 dateFormatter.format(Date())
             } [${formatThreadName()}] ${
                 String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
-            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
+            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}"
         )
     }
 
     override fun error(marker: Marker?, msg: String?, t: Throwable?) {
         if (isErrorEnabled) logQueue.offer(
-            "${ColorConstants.getColorPattern(ColorConstants.RED_FG)}[${String.format("%-5s", Level.ERROR)}] ${
+            "[${ColorConstants.getColorPattern(ColorConstants.RED_FG)}${
+                String.format(
+                    "%-5s",
+                    Level.ERROR
+                )
+            }${ColorConstants.getDefault()}] ${
                 dateFormatter.format(Date())
             }|${marker ?: ""} [${formatThreadName()}] ${
                 String.format("%-${LOGGER_NAME_LENGTH}s", shortenedName)
-            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}${ColorConstants.getDefault()}"
+            }: ${msg.toString()}${if (t == null) "" else "\n${t.stackTraceToString()}"}"
         )
     }
 
