@@ -45,7 +45,10 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-engine:5.9.0"
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
             "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutineVersion")
-    implementation "org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion"
+    implementation("org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion") {
+        exclude group: 'org.jboss.logging'
+        exclude group: 'org.jboss'
+    }
     implementation "org.hibernate.orm:hibernate-core:$hibernateEntitymanagerVersion"
     implementation "org.glassfish:jakarta.el:$jakartaElVersion"
     implementation(
@@ -56,7 +59,6 @@ dependencies {
             "org.springframework:spring-aspects:$springVersion",
             "org.springframework:spring-context:$springVersion",
             "org.springframework:spring-websocket:$springVersion",
-            "org.springframework:spring-messaging:$springVersion",
     )
     implementation "com.h2database:h2:$h2Version"
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
@@ -67,7 +69,9 @@ dependencies {
             "org.eclipse.jetty:jetty-webapp:$jettyVersion",
             "org.eclipse.jetty.websocket:websocket-jetty-server:$jettyVersion"
     )
-    implementation "org.quartz-scheduler:quartz:$quartzVersion"
+    implementation("org.quartz-scheduler:quartz:$quartzVersion") {
+        exclude group: 'com.mchange'
+    }
 // https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-api
     implementation('jakarta.platform:jakarta.jakartaee-api:9.1.0')
 
