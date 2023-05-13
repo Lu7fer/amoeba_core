@@ -1,4 +1,4 @@
-# Amoeba_core
+# amoeba_core
 
 ## description
 
